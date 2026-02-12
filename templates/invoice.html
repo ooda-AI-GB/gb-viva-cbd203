@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Generation</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f4f4f4; color: #333; }
+        .container { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); max-width: 800px; margin: auto; }
+        h1 { color: #0056b3; text-align: center; }
+        form div { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"], input[type="date"] { width: calc(100% - 22px); padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        button { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 1em; }
+        button:hover { background-color: #0056b3; }
+        .invoice-details { margin-top: 30px; border-top: 2px solid #eee; padding-top: 20px; }
+        .invoice-details h2 { color: #0056b3; }
+        .invoice-details p { margin-bottom: 8px; }
+        .invoice-details table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .invoice-details th, .invoice-details td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .invoice-details th { background-color: #f2f2f2; }
+        .total { font-weight: bold; margin-top: 20px; text-align: right; font-size: 1.2em; }
+        .message { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; padding: 10px; border-radius: 4px; margin-bottom: 15px; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; padding: 10px; border-radius: 4px; margin-bottom: 15px; }
+        .nav-links { text-align: center; margin-top: 20px; }
+        .nav-links a { margin: 0 10px; text-decoration: none; color: #007bff; font-weight: bold; }
+        .nav-links a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Generate Invoice</h1>
+
+        {% if message %}
+            <div class="message">{{ message }}</div>
+        {% endif %}
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <form action="/generate_invoice" method="post">
+            <div>
+                <label for="client_name">Client Name:</label>
+                <input type="text" id="client_name" name="client_name" required>
+            </div>
+            <div>
+                <label for="start_date">Start Date:</label>
+                <input type="date" id="start_date" name="start_date" required>
+            </div>
+            <div>
+                <label for="end_date">End Date:</label>
+                <input type="date" id="end_date" name="end_date" required>
+            </div>
+            <button type="submit">Generate Invoice</button>
+        </form>
+
+        {% if invoice_generated %}
+            <div class="invoice-details">
+                <h2>Invoice for {{ client_name }}</h2>
+                <p><strong>Period:</strong> {{ start_date }} to {{ end_date }}</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Hours</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in filtered_hours %}
+                        <tr>
+                            <td>{{ entry.date }}</td>
+                            <td>{{ entry.hours }}</td>
+                            <td>{{ entry.description }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <p class="total">Total Hours: {{ total_hours }}</p>
+                <p><em>Note: This is a simplified invoice for demonstration.</em></p>
+            </div>
+        {% endif %}
+
+        <div class="nav-links">
+            <a href="/">Time Entry</a>
+            <a href="/dashboard">View Dashboard</a>
+        </div>
+    </div>
+</body>
+</html>
